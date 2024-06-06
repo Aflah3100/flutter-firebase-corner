@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase/flutter_login_signup/signin_screen.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -27,10 +28,12 @@ class _SignUpPageState extends State<SignUpPage> {
       final password = passwordController.text;
       final UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+        
       ScaffoldMessenger.of(scaffoldKey.currentContext!).showSnackBar(
           const SnackBar(
               content: Text('User Registared Successfully',
                   style: TextStyle(fontSize: 20.0))));
+
       setState(() {
         nameTextController.text = "";
         emailTextController.text = "";
@@ -193,6 +196,11 @@ class _SignUpPageState extends State<SignUpPage> {
                               //Validate Crentials
                               if (formKey.currentState!.validate()) {
                                 registerUser();
+                                Navigator.of(context).pop();
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (ctx) => SignInPage(
+                                        displayName:
+                                            emailTextController.text)));
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -225,11 +233,17 @@ class _SignUpPageState extends State<SignUpPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SizedBox(
-                                  height: 45,
-                                  width: 45,
-                                  child:
-                                      Image.asset('assets/images/google.png')),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, 'google-sign-in-page');
+                                },
+                                child: SizedBox(
+                                    height: 45,
+                                    width: 45,
+                                    child: Image.asset(
+                                        'assets/images/google.png')),
+                              ),
                               SizedBox(
                                   height: 50,
                                   width: 50,

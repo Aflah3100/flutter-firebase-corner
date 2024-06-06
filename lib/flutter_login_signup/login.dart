@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase/flutter_login_signup/signin_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -174,6 +175,11 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
                                 loginUser();
+                                Navigator.of(context).pop();
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (ctx) => SignInPage(
+                                        displayName:
+                                            emailTextController.text)));
                               }
                             },
                             style: ElevatedButton.styleFrom(
