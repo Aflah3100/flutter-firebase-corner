@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase/flutter_login_signup/forgot_password.dart';
 import 'package:flutter_firebase/flutter_login_signup/login.dart';
 import 'package:flutter_firebase/flutter_login_signup/signup.dart';
 
@@ -22,10 +23,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SignUpPage(),
+      home:  const SignUpPage(),
       routes: {
-        'Login-Page': (ctx) => const LoginPage(),
-        'Signup-Page': (ctx) => const SignUpPage(),
+        'Login-Page': (ctx) =>  const LoginPage(),
+        'Signup-Page': (ctx) =>  const SignUpPage(),
+        'forgot-password-page': (ctx) => const ForgotPasswordPage()
       },
     );
   }
