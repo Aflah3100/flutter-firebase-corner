@@ -6,21 +6,22 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Flutter Firebase Corner'),
-      centerTitle: true,
-      
+      appBar: AppBar(
+        title: const Text('Flutter Firebase Corner'),
+        centerTitle: true,
       ),
-
-      body: SafeArea(child: Center(
+      body: SafeArea(
+          child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-        
           children: [
-        
-            ElevatedButton(onPressed: (){}, child: const Text('Firebase Authentication (Login &Signup)'))
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('Login-Page');
+                },
+                child: const Text('Firebase Authentication '))
           ],
-        
         ),
       )),
     );
