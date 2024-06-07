@@ -1,60 +1,68 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase/flutter_login_signup/signin_screen.dart';
+import 'package:flutter_firebase/flutter_authentication/signin_screen.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
   //Controllers
+  final nameTextController = TextEditingController();
+
   final emailTextController = TextEditingController();
+
   final passwordController = TextEditingController();
 
   //keys
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  //Login-User-with-Firebase
-
-  void loginUser() async {
+  //Register-User-To-Firebase-Function
+  void registerUser() async {
     try {
       final email = emailTextController.text;
       final password = passwordController.text;
-      // Await the sign-in attempt
-      final userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      // If sign-in was successful, show the success message
+      final UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+
       ScaffoldMessenger.of(scaffoldKey.currentContext!).showSnackBar(
           const SnackBar(
-              backgroundColor: Colors.greenAccent,
-              content: Text('User Logged In Successfully',
+              content: Text('User Registared Successfully',
                   style: TextStyle(fontSize: 20.0))));
+
       setState(() {
+        nameTextController.text = "";
         emailTextController.text = "";
         passwordController.text = "";
       });
     } on FirebaseAuthException catch (e) {
-      if (e.code == "user-not-found") {
-        ScaffoldMessenger.of(scaffoldKey.currentContext!).showSnackBar(
-            const SnackBar(
-                backgroundColor: Colors.redAccent,
-                content: Text("No User found with this email",
-                    style: TextStyle(fontSize: 18.0))));
-      } else if (e.code == "wrong-password") {
-        ScaffoldMessenger.of(scaffoldKey.currentContext!).showSnackBar(
-            const SnackBar(
-                backgroundColor: Colors.redAccent,
-                content:
-                    Text("Wrong Password", style: TextStyle(fontSize: 18.0))));
+      if (e.code == "weak-password") {
+        ScaffoldMessenger.of(scaffoldKey.currentContext!)
+            .showSnackBar(const SnackBar(
+                backgroundColor: Colors.orangeAccent,
+                content: Text(
+                  "Password Provided is too Weak",
+                  style: TextStyle(fontSize: 18.0),
+                )));
+      } else if (e.code == "email-already-in-use") {
+        ScaffoldMessenger.of(scaffoldKey.currentContext!)
+            .showSnackBar(const SnackBar(
+                backgroundColor: Colors.orangeAccent,
+                content: Text(
+                  "Account Already exits",
+                  style: TextStyle(fontSize: 18.0),
+                )));
       } else {
         ScaffoldMessenger.of(scaffoldKey.currentContext!).showSnackBar(SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: Text("Error: ${e.code}",
-                style: const TextStyle(fontSize: 18.0))));
+            backgroundColor: Colors.orangeAccent,
+            content: Text(
+              e.code,
+              style: const TextStyle(fontSize: 18.0),
+            )));
       }
     }
   }
@@ -100,15 +108,15 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(30.0))),
                           child: TextFormField(
-                              controller: emailTextController,
+                              controller: nameTextController,
                               validator: (value) =>
                                   (value == null || value.isEmpty)
                                       ? 'Enter Name'
                                       : null,
-                              keyboardType: TextInputType.emailAddress,
+                              keyboardType: TextInputType.name,
                               decoration: const InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: 'Email',
+                                  hintText: 'Name',
                                   hintStyle: TextStyle(
                                       color: Color(0xFFb2b7bf),
                                       fontSize: 18.0))),
@@ -128,11 +136,39 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(30.0))),
                           child: TextFormField(
-                              controller: passwordController,
+                              controller: emailTextController,
+                              validator: (value) =>
+                                  (value == null || value.isEmpty)
+                                      ? 'Enter Email'
+                                      : null,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Email',
+                                  hintStyle: TextStyle(
+                                      color: Color(0xFFb2b7bf),
+                                      fontSize: 18.0))),
+                        ),
+                        const SizedBox(
+                          height: 30.0,
+                        ),
+
+                        //Text form field container-3
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 2.0, horizontal: 30.0),
+                          width: width,
+                          height: height * 0.05,
+                          decoration: const BoxDecoration(
+                              color: Color(0xFFedf0f8),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30.0))),
+                          child: TextFormField(
                               validator: (value) =>
                                   (value == null || value.isEmpty)
                                       ? 'Enter Password'
                                       : null,
+                              controller: passwordController,
                               obscureText: true,
                               keyboardType: TextInputType.visiblePassword,
                               decoration: const InputDecoration(
@@ -146,23 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: 30.0,
                         ),
 
-                        //Forgot Password Text Button
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context)
-                                .pushNamed('forgot-password-page');
-                          },
-                          child: const Text("Forgot Password?",
-                              style: TextStyle(
-                                  color: Color(0xFF8c8e98),
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.w500)),
-                        ),
-                        const SizedBox(
-                          height: 30.0,
-                        ),
-
-                        //Login Button-Container
+                        //Sign-Up Button-Container
                         Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 2.0, horizontal: 30.0),
@@ -173,8 +193,9 @@ class _LoginPageState extends State<LoginPage> {
                                   BorderRadius.all(Radius.circular(30.0))),
                           child: ElevatedButton(
                             onPressed: () {
+                              //Validate Crentials
                               if (formKey.currentState!.validate()) {
-                                loginUser();
+                                registerUser();
                                 Navigator.of(context).pop();
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (ctx) => SignInPage(
@@ -185,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF273671)),
                             child: const Text(
-                              'Sign In',
+                              'Sign Up',
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -206,32 +227,43 @@ class _LoginPageState extends State<LoginPage> {
                           height: 30,
                         ),
 
-                        //Google-Sign-Row
+                        //Google-SignI-Row
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 160),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SizedBox(
-                                  height: 45,
-                                  width: 45,
-                                  child:
-                                      Image.asset('assets/images/google.png')),
-                              SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child:
-                                      Image.asset('assets/images/apple1.png')),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, 'google-sign-in-page');
+                                },
+                                child: SizedBox(
+                                    height: 45,
+                                    width: 45,
+                                    child: Image.asset(
+                                        'assets/images/google.png')),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context)
+                                      .pushNamed('otp-login-page');
+                                },
+                                child: const SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: Icon(Icons.phone_android_outlined)),
+                              ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 30),
 
-                        //Sign Up Row
+                        //Login-Row
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text("Dont have an account",
+                            const Text("Already have an account?",
                                 style: TextStyle(
                                     color: Color(0xFF8c8e98),
                                     fontSize: 18.0,
@@ -242,10 +274,10 @@ class _LoginPageState extends State<LoginPage> {
                             GestureDetector(
                               onTap: () {
                                 Navigator.of(context)
-                                    .popAndPushNamed('Signup-Page');
+                                    .popAndPushNamed('Login-Page');
                               },
                               child: const Text(
-                                "Sign Up",
+                                "LogIn",
                                 style: TextStyle(
                                     color: Color(0xFF273671),
                                     fontSize: 20.0,
