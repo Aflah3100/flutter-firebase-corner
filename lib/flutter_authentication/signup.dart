@@ -12,14 +12,18 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   //Controllers
   final nameTextController = TextEditingController();
-
   final emailTextController = TextEditingController();
-
   final passwordController = TextEditingController();
 
   //keys
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    const AuthWrapper();
+  }
 
   //Register-User-To-Firebase-Function
   void registerUser() async {
@@ -31,7 +35,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
       ScaffoldMessenger.of(scaffoldKey.currentContext!).showSnackBar(
           const SnackBar(
-              content: Text('User Registared Successfully',
+              content: Text('User Registered Successfully',
                   style: TextStyle(fontSize: 20.0))));
 
       setState(() {
@@ -293,6 +297,29 @@ class _SignUpPageState extends State<SignUpPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasData) {
+          return SignInPage(
+            displayName: snapshot.data!.email ?? "User",
+          );
+        } else {
+          return const SignUpPage();
+        }
+      },
     );
   }
 }
